@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Phi.Model;
 
 namespace Phi.Api.Controllers;
 
@@ -19,14 +20,25 @@ public class BestStoriesController : ControllerBase
     }
 
     [HttpGet("{storiesCount}")]
-    public IEnumerable<WeatherForecast> Get(int storiesCount)
+    public IEnumerable<Story> Get(int storiesCount)
     {
-        return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-        {
-            Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            TemperatureC = storiesCount,
-            Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-        })
-        .ToArray();
+        return new [] {
+            new Story {
+                Title = "test title 1",
+                Uri = "https://test-site-1.com",
+                PostedBy = "author 123",
+                DateTime = DateTime.Now,
+                Score = 3,
+                CommentCount = 55
+            },
+            new Story {
+                Title = "test title 2",
+                Uri = "https://test-site-2.com",
+                PostedBy = "author 222",
+                DateTime = DateTime.Now,
+                Score = 7,
+                CommentCount = 33
+            },
+        };
     }
 }
