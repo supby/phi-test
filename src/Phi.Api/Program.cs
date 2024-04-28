@@ -1,4 +1,5 @@
 using Phi.Client;
+using Phi.Model.Api;
 using Phi.Service;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddSingleton<ICacheService<int,Story?>, InMemoryCacheService<int,Story?>>();
 builder.Services.AddScoped<IStoryService, StoryService>();
 builder.Services.AddHttpClient<IDataClient, HackerNewsDataClient>();
 builder.Services.AddScoped<IDataClient, HackerNewsDataClient>();
