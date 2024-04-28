@@ -7,6 +7,6 @@ public class Story
     public int Score { get; set; }
     public uint Time { get; set; }
     public required string Title { get; set; }
-    public required string Url { get; set; }
+    public string Url { get; set; }
     public int Descendants { get; set; }
 }

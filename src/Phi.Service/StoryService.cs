@@ -18,9 +18,10 @@ public class StoryService : IStoryService
         foreach (var storyId in await _dataClient.GetBestStoryIds())
         {
             var story = await _dataClient.GetStoryById(storyId);
-            
+
             if (story == null) continue;
 
+            // TODO: add AutoMapper
             bestStories.Add(new Story() {
                 Title = story.Title,
                 Uri = story.Url,
@@ -31,6 +32,6 @@ public class StoryService : IStoryService
             });
         }
 
-        return bestStories.OrderByDescending(story => story.Score).ToList();
+        return bestStories.OrderByDescending(story => story.Score).Take(n).ToList();
     }
 }

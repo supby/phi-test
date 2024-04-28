@@ -1,3 +1,6 @@
+using Phi.Client;
+using Phi.Service;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +9,10 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IStoryService, StoryService>();
+builder.Services.AddHttpClient<IDataClient, HackerNewsDataClient>();
+builder.Services.AddScoped<IDataClient, HackerNewsDataClient>();
 
 var app = builder.Build();
 
