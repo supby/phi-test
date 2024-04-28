@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Phi.Model;
+using Phi.Model.Api;
 
 namespace Phi.Api.Controllers;
 
@@ -27,7 +27,7 @@ public class BestStoriesController : ControllerBase
                 Title = "test title 1",
                 Uri = "https://test-site-1.com",
                 PostedBy = "author 123",
-                DateTime = DateTime.Now,
+                Time = DateTime.Now,
                 Score = 3,
                 CommentCount = 55
             },
@@ -35,7 +35,7 @@ public class BestStoriesController : ControllerBase
                 Title = "test title 2",
                 Uri = "https://test-site-2.com",
                 PostedBy = "author 222",
-                DateTime = DateTime.Now,
+                Time = DateTime.Now,
                 Score = 7,
                 CommentCount = 33
             },

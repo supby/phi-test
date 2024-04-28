@@ -1,4 +1,4 @@
-﻿namespace Phi.Model;
+﻿namespace Phi.Model.Api;
 
 /*
 
@@ -15,10 +15,10 @@
 
 public class Story
 {
-    public string Title { get; set; }
-    public string Uri { get; set; }
-    public string PostedBy { get; set; }
-    public DateTime DateTime { get; set; }
+    public required string Title { get; set; }
+    public required string Uri { get; set; }
+    public required string PostedBy { get; set; }
+    public DateTime Time { get; set; }
     public int Score { get; set; }
     public int CommentCount { get; set; }
 }
