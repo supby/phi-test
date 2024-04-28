@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Phi.Model.Api;
+using Phi.Service;
 
 namespace Phi.Api.Controllers;
 
@@ -7,38 +8,22 @@ namespace Phi.Api.Controllers;
 [Route("[controller]")]
 public class BestStoriesController : ControllerBase
 {
-    private static readonly string[] Summaries = new[]
-    {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
-
     private readonly ILogger<BestStoriesController> _logger;
+    private readonly IStoryService _storyService;
 
-    public BestStoriesController(ILogger<BestStoriesController> logger)
+    public BestStoriesController(
+        IStoryService storyService,
+        ILogger<BestStoriesController> logger)
     {
         _logger = logger;
+        _storyService = storyService;
     }
 
     [HttpGet("{storiesCount}")]
-    public IEnumerable<Story> Get(int storiesCount)
+    public async Task<IEnumerable<Story>> Get(int storiesCount)
     {
-        return new [] {
-            new Story {
-                Title = "test title 1",
-                Uri = "https://test-site-1.com",
-                PostedBy = "author 123",
-                Time = DateTime.Now,
-                Score = 3,
-                CommentCount = 55
-            },
-            new Story {
-                Title = "test title 2",
-                Uri = "https://test-site-2.com",
-                PostedBy = "author 222",
-                Time = DateTime.Now,
-                Score = 7,
-                CommentCount = 33
-            },
-        };
+        // TODO: validate input
+        
+        return await _storyService.GetNBestStories(storiesCount);
     }
 }

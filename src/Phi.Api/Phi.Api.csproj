@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Phi.Model\Phi.Model.csproj" />
+    <ProjectReference Include="..\Phi.Service\Phi.Service.csproj" />
   </ItemGroup>
 
 </Project>
