@@ -4,20 +4,30 @@ using System.Text.Json;
 
 namespace Phi.Client;
 
+public class HackerNewsClientConfig
+{
+    public required string GetBestStoriesUri { get; set; }
+    public required string GetStoryByIdBaseUri { get; set; }
+}
+
 public class HackerNewsDataClient : IDataClient
 {
-    private const string GetBestStoriesUri = "https://hacker-news.firebaseio.com/v0/beststories.json";
-    private const string GetStoryByIdUriTemplate = "https://hacker-news.firebaseio.com/v0/item/{0}.json";
-    private readonly HttpClient _httpClient;
+    private const string GetStoryByIdUriTemplate = "{0}.json";
 
-    public HackerNewsDataClient(HttpClient httpClient)
+    private readonly HttpClient _httpClient;
+    private readonly HackerNewsClientConfig _config;
+
+    public HackerNewsDataClient(
+        HttpClient httpClient,
+        HackerNewsClientConfig config)
     {
         _httpClient = httpClient;
+        _config = config;
     }
 
     public async Task<IEnumerable<int>> GetBestStoryIds()
     {
-        var storyIds = await _httpClient.GetFromJsonAsync<int[]>(GetBestStoriesUri);
+        var storyIds = await _httpClient.GetFromJsonAsync<int[]>(_config.GetBestStoriesUri);
         if (storyIds == null || storyIds.Length == 0)
         {
             return Enumerable.Empty<int>();
@@ -28,6 +38,7 @@ public class HackerNewsDataClient : IDataClient
 
     public async Task<Story?> GetStoryById(int id)
     {
-        return await _httpClient.GetFromJsonAsync<Story>(string.Format(GetStoryByIdUriTemplate, id));
+		var getByIdUri = new Uri(new Uri(_config.GetStoryByIdBaseUri), string.Format(GetStoryByIdUriTemplate, id));
+        return await _httpClient.GetFromJsonAsync<Story>(getByIdUri);
     }
 }

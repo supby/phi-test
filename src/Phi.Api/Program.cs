@@ -14,7 +14,11 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<ICacheService<int,Story?>, InMemoryCacheService<int,Story?>>();
 builder.Services.AddScoped<IStoryService, StoryService>();
 builder.Services.AddHttpClient<IDataClient, HackerNewsDataClient>();
-builder.Services.AddScoped<IDataClient, HackerNewsDataClient>();
+
+
+var hackerNewsClientConfig = builder.Configuration.GetSection("HackerNewsClientConfig").Get<HackerNewsClientConfig>();
+builder.Services.AddScoped<IDataClient, HackerNewsDataClient>(x => 
+    new HackerNewsDataClient(x.GetRequiredService<HttpClient>(), hackerNewsClientConfig));
 
 var app = builder.Build();
 
