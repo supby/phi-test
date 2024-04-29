@@ -8,22 +8,21 @@ namespace Phi.Api.Controllers;
 [Route("[controller]")]
 public class BestStoriesController : ControllerBase
 {
-    private readonly ILogger<BestStoriesController> _logger;
     private readonly IStoryService _storyService;
 
-    public BestStoriesController(
-        IStoryService storyService,
-        ILogger<BestStoriesController> logger)
+    public BestStoriesController(IStoryService storyService)
     {
-        _logger = logger;
         _storyService = storyService;
     }
 
     [HttpGet("{storiesCount}")]
-    public async Task<IEnumerable<Story>> Get(int storiesCount)
+    public async Task<ActionResult<Story>> Get(int storiesCount)
     {
-        // TODO: validate input
+        if (storiesCount <= 0)
+        {
+            return BadRequest();
+        }
         
-        return await _storyService.GetNBestStories(storiesCount);
+        return Ok(await _storyService.GetNBestStories(storiesCount));
     }
 }
