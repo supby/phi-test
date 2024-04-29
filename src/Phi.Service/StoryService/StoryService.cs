@@ -22,46 +22,38 @@ public class StoryService : IStoryService
 
     public async Task<IEnumerable<Story>> GetNBestStories(int n)
     {
-        try
-        {
-            var bestStories = new List<Story>();
+        var bestStories = new List<Story>();
 
-            foreach (var storyId in await _dataClient.GetBestStoryIds())
-            {   
-                var cachedStory = _cacheService.GetByKey(storyId);
-                if (cachedStory != null)
-                {
-                    _logger.LogDebug("Story {0} exists in cache, using cached version.", storyId);
+        foreach (var storyId in await _dataClient.GetBestStoryIds())
+        {   
+            var cachedStory = _cacheService.GetByKey(storyId);
+            if (cachedStory != null)
+            {
+                _logger.LogDebug("Story {0} exists in cache, using cached version.", storyId);
 
-                    bestStories.Add(cachedStory);
-                    continue;
-                }
-
-                _logger.LogDebug("Story {0} is NOT found in cache, requesting from API.", storyId);
-
-                var story = await _dataClient.GetStoryById(storyId);
-                if (story == null) continue;
-
-                // TODO: add AutoMapper
-                var newStory = new Story() {
-                    Title = story.Title,
-                    Uri = story.Url,
-                    PostedBy = story.By,
-                    Time = DateTimeOffset.FromUnixTimeSeconds(story.Time).UtcDateTime,
-                    Score = story.Score,
-                    CommentCount = story.Descendants
-                };
-
-                
-                bestStories.Add(newStory);
-                _cacheService.Add(storyId, newStory);
+                bestStories.Add(cachedStory);
+                continue;
             }
-            return bestStories.OrderByDescending(story => story.Score).Take(n).ToList();
+
+            _logger.LogDebug("Story {0} is NOT found in cache, requesting from API.", storyId);
+
+            var story = await _dataClient.GetStoryById(storyId);
+            if (story == null) continue;
+
+            // TODO: add AutoMapper
+            var newStory = new Story() {
+                Title = story.Title,
+                Uri = story.Url,
+                PostedBy = story.By,
+                Time = DateTimeOffset.FromUnixTimeSeconds(story.Time).UtcDateTime,
+                Score = story.Score,
+                CommentCount = story.Descendants
+            };
+
+            
+            bestStories.Add(newStory);
+            _cacheService.Add(storyId, newStory);
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(0, ex, "Error while processing request {0}", ex.Message);
-            return Enumerable.Empty<Story>();
-        }
+        return bestStories.OrderByDescending(story => story.Score).Take(n).ToList();
     }
 }

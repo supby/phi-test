@@ -9,10 +9,14 @@ namespace Phi.Api.Controllers;
 public class BestStoriesController : ControllerBase
 {
     private readonly IStoryService _storyService;
+    private readonly ILogger<BestStoriesController> _logger;
 
-    public BestStoriesController(IStoryService storyService)
+    public BestStoriesController(
+        IStoryService storyService,
+        ILogger<BestStoriesController> logger)
     {
         _storyService = storyService;
+        _logger = logger;
     }
 
     [HttpGet("{storiesCount}")]
@@ -22,7 +26,15 @@ public class BestStoriesController : ControllerBase
         {
             return BadRequest();
         }
-        
-        return Ok(await _storyService.GetNBestStories(storiesCount));
+
+        try
+        {
+            return Ok(await _storyService.GetNBestStories(storiesCount));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(0, ex, "Error while processing request {0}", ex.Message);
+            return StatusCode(500, "Error while processing request"); 
+        }
     }
 }
