@@ -17,6 +17,7 @@ builder.Services.AddHttpClient<IDataClient, HackerNewsDataClient>();
 
 
 var hackerNewsClientConfig = builder.Configuration.GetSection("HackerNewsClientConfig").Get<HackerNewsClientConfig>();
+// TODO: stop building app if the config is null or use default values
 builder.Services.AddScoped<IDataClient, HackerNewsDataClient>(x => 
     new HackerNewsDataClient(x.GetRequiredService<HttpClient>(), hackerNewsClientConfig));
 
