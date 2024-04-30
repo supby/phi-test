@@ -18,7 +18,7 @@ public class StoryServiceTests
             .Returns(Task.FromResult(_storyIds.AsEnumerable()));
 
         _dataClientMock
-            .Setup(x => x.GetStoryById(It.IsIn<int>(_storyIds)))
+            .Setup(x => x.GetStoryById(It.IsIn<int>(_storyIds.Take(requestedTestsCount))))
             .Returns(Task.FromResult<Model.Client.Story?>(new Model.Client.Story
             {
                 Id = 123,
@@ -36,7 +36,7 @@ public class StoryServiceTests
     {
         var cacheServiceMock = new Mock<ICacheService<int,Story>>();
         cacheServiceMock
-            .Setup(x => x.GetByKey(It.IsIn<int>(_storyIds)))
+            .Setup(x => x.GetByKey(It.IsIn<int>(_storyIds.Take(requestedTestsCount))))
             .Returns(new Story {
                 Title = "test 1",
                 Uri = "test uri 1",
@@ -54,9 +54,9 @@ public class StoryServiceTests
         Assert.Equal(requestedTestsCount, res.Count());
 
         _dataClientMock.Verify(x => x.GetBestStoryIds(), Times.Once);
-        _dataClientMock.Verify(x => x.GetStoryById(It.IsIn<int>(_storyIds)), Times.Never);
-        cacheServiceMock.Verify(x => x.GetByKey(It.IsIn<int>(_storyIds)), Times.Exactly(3));
-        cacheServiceMock.Verify(x => x.Add(It.IsIn<int>(_storyIds), It.IsAny<Phi.Model.Api.Story>()), Times.Never);
+        _dataClientMock.Verify(x => x.GetStoryById(It.IsIn<int>(_storyIds.Take(requestedTestsCount))), Times.Never);
+        cacheServiceMock.Verify(x => x.GetByKey(It.IsIn<int>(_storyIds.Take(requestedTestsCount))), Times.Exactly(requestedTestsCount));
+        cacheServiceMock.Verify(x => x.Add(It.IsIn<int>(_storyIds.Take(requestedTestsCount)), It.IsAny<Phi.Model.Api.Story>()), Times.Never);
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public class StoryServiceTests
     {
         var cacheServiceMock = new Mock<ICacheService<int,Story>>();
         cacheServiceMock
-            .Setup(x => x.GetByKey(It.IsIn<int>(_storyIds)))
+            .Setup(x => x.GetByKey(It.IsIn<int>(_storyIds.Take(requestedTestsCount))))
             .Returns(default(Story));
 
         var loggerMock = new Mock<ILogger<StoryService>>();
@@ -75,9 +75,9 @@ public class StoryServiceTests
         Assert.Equal(requestedTestsCount, res.Count());
 
         _dataClientMock.Verify(x => x.GetBestStoryIds(), Times.Once);
-        _dataClientMock.Verify(x => x.GetStoryById(It.IsIn<int>(_storyIds)), Times.Exactly(3));
-        cacheServiceMock.Verify(x => x.GetByKey(It.IsIn<int>(_storyIds)), Times.Exactly(3));
-        cacheServiceMock.Verify(x => x.Add(It.IsIn<int>(_storyIds), It.IsAny<Phi.Model.Api.Story>()), Times.Exactly(3));
+        _dataClientMock.Verify(x => x.GetStoryById(It.IsIn<int>(_storyIds.Take(requestedTestsCount))), Times.Exactly(requestedTestsCount));
+        cacheServiceMock.Verify(x => x.GetByKey(It.IsIn<int>(_storyIds.Take(requestedTestsCount))), Times.Exactly(requestedTestsCount));
+        cacheServiceMock.Verify(x => x.Add(It.IsIn<int>(_storyIds.Take(requestedTestsCount)), It.IsAny<Phi.Model.Api.Story>()), Times.Exactly(requestedTestsCount));
     }
 
     [Fact]
@@ -85,7 +85,7 @@ public class StoryServiceTests
     {
         var cacheServiceMock = new Mock<ICacheService<int,Story>>();
         cacheServiceMock
-            .Setup(x => x.GetByKey(It.IsIn<int>(_storyIds)))
+            .Setup(x => x.GetByKey(It.IsIn<int>(_storyIds.Take(requestedTestsCount))))
             .Returns(default(Story));
 
         var dataClientMock = new Mock<IDataClient>();
@@ -93,7 +93,7 @@ public class StoryServiceTests
             .Setup(x => x.GetBestStoryIds())
             .Returns(Task.FromResult(_storyIds.AsEnumerable()));
         dataClientMock
-            .Setup(x => x.GetStoryById(It.IsIn<int>(_storyIds)))
+            .Setup(x => x.GetStoryById(It.IsIn<int>(_storyIds.Take(requestedTestsCount))))
             .Returns(Task.FromResult<Model.Client.Story?>(null));
 
         var loggerMock = new Mock<ILogger<StoryService>>();
@@ -104,7 +104,7 @@ public class StoryServiceTests
         Assert.Empty(res);
 
         dataClientMock.Verify(x => x.GetBestStoryIds(), Times.Once);
-        dataClientMock.Verify(x => x.GetStoryById(It.IsIn<int>(_storyIds)), Times.Exactly(3));
-        cacheServiceMock.Verify(x => x.GetByKey(It.IsIn<int>(_storyIds)), Times.Exactly(3));
+        dataClientMock.Verify(x => x.GetStoryById(It.IsIn<int>(_storyIds.Take(requestedTestsCount))), Times.Exactly(requestedTestsCount));
+        cacheServiceMock.Verify(x => x.GetByKey(It.IsIn<int>(_storyIds.Take(requestedTestsCount))), Times.Exactly(requestedTestsCount));
     }
 }
