@@ -33,5 +33,6 @@ In case it is not true it needs to load all stories to be able to sort them, whi
 
 1. Adding AutoMapper configuration to map from HackerNews API model `Phi.Model.Client.Story` to API model `Phi.Model.API.Story`
 2. Dockerize the application to not depend on the environment.
-3. Think about the cache invalidation mechanism in case data is changed.  
+3. Think about the cache invalidation mechanism in case data is changed.
+4. Adding sturtup check in case if configuration is not valid.
 
