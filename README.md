@@ -14,6 +14,11 @@ Run following command in the root directory of the project:
 dotnet build . && dotnet run --project ./src/Phi.Api/
 ```
 
+Run tests:
+```
+dotnet test
+```
+
 The applications Swagger UI will be accessible on `http://localhost:5214/swagger/index.html`
 
 ## Considerations
@@ -35,4 +40,5 @@ In case it is not true it needs to load all stories to be able to sort them, whi
 2. Dockerize the application to not depend on the environment.
 3. Think about the cache invalidation mechanism in case data is changed.
 4. Adding sturtup check in case if configuration is not valid.
+5. Adding more unit tests.
 
