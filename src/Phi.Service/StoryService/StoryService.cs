@@ -24,7 +24,12 @@ public class StoryService : IStoryService
     {
         var bestStories = new List<Story>();
 
-        foreach (var storyId in await _dataClient.GetBestStoryIds())
+        // NOTE: i did not find any confirmnation in docs that beststories.json endpoint returns ids sorted in descending order
+        // but according to tests it is true so my assaumtion here beststories.json returns ids in descending by score order
+        // In case it is not true it needs to load all stories to be able to sort them, which would require warm-up cache by firts requests after start.
+        // var storyIds = await _dataClient.GetBestStoryIds();
+        var storyIds = (await _dataClient.GetBestStoryIds()).Take(n);
+        foreach (var storyId in storyIds)
         {   
             var cachedStory = _cacheService.GetByKey(storyId);
             if (cachedStory != null)
@@ -54,6 +59,7 @@ public class StoryService : IStoryService
             bestStories.Add(newStory);
             _cacheService.Add(storyId, newStory);
         }
+
         return bestStories.OrderByDescending(story => story.Score).Take(n).ToList();
     }
 }
