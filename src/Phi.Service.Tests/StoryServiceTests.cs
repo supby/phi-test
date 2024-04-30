@@ -56,6 +56,7 @@ public class StoryServiceTests
         _dataClientMock.Verify(x => x.GetBestStoryIds(), Times.Once);
         _dataClientMock.Verify(x => x.GetStoryById(It.IsIn<int>(_storyIds)), Times.Never);
         cacheServiceMock.Verify(x => x.GetByKey(It.IsIn<int>(_storyIds)), Times.Exactly(3));
+        cacheServiceMock.Verify(x => x.Add(It.IsIn<int>(_storyIds), It.IsAny<Phi.Model.Api.Story>()), Times.Never);
     }
 
     [Fact]
@@ -75,6 +76,35 @@ public class StoryServiceTests
 
         _dataClientMock.Verify(x => x.GetBestStoryIds(), Times.Once);
         _dataClientMock.Verify(x => x.GetStoryById(It.IsIn<int>(_storyIds)), Times.Exactly(3));
+        cacheServiceMock.Verify(x => x.GetByKey(It.IsIn<int>(_storyIds)), Times.Exactly(3));
+        cacheServiceMock.Verify(x => x.Add(It.IsIn<int>(_storyIds), It.IsAny<Phi.Model.Api.Story>()), Times.Exactly(3));
+    }
+
+    [Fact]
+    public async void StoryService_Success_Not_Exists_in_Cache_and_API_returns_null()
+    {
+        var cacheServiceMock = new Mock<ICacheService<int,Story>>();
+        cacheServiceMock
+            .Setup(x => x.GetByKey(It.IsIn<int>(_storyIds)))
+            .Returns(default(Story));
+
+        var dataClientMock = new Mock<IDataClient>();
+        dataClientMock
+            .Setup(x => x.GetBestStoryIds())
+            .Returns(Task.FromResult(_storyIds.AsEnumerable()));
+        dataClientMock
+            .Setup(x => x.GetStoryById(It.IsIn<int>(_storyIds)))
+            .Returns(Task.FromResult<Model.Client.Story?>(null));
+
+        var loggerMock = new Mock<ILogger<StoryService>>();
+
+        var sut = new StoryService(dataClientMock.Object, cacheServiceMock.Object, loggerMock.Object);
+        var res = await sut.GetNBestStories(requestedTestsCount);
+
+        Assert.Empty(res);
+
+        dataClientMock.Verify(x => x.GetBestStoryIds(), Times.Once);
+        dataClientMock.Verify(x => x.GetStoryById(It.IsIn<int>(_storyIds)), Times.Exactly(3));
         cacheServiceMock.Verify(x => x.GetByKey(It.IsIn<int>(_storyIds)), Times.Exactly(3));
     }
 }
